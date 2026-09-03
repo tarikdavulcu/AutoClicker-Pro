@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title data-i18n="optTitle">Profil Yönetimi</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="opt-container">
+    <div class="opt-header">
+      <h2 data-i18n="optTitle"></h2>
+      <div class="opt-actions">
+        <select class="lang-select" id="langSelect">
+          <option value="tr">Türkçe</option>
+          <option value="en">English</option>
+        </select>
+        <button class="btn btn-outline" id="btnImportPresets" data-i18n="optImportPresets"></button>
+        <button class="btn btn-success" id="btnWizard" data-i18n="optWizard"></button>
+        <button class="btn btn-primary" id="btnNewProfile" data-i18n="optNewProfile"></button>
+      </div>
+    </div>
+
+    <div id="profileList"></div>
+
+    <div id="wizardPanel" style="display:none">
+      <div class="card">
+        <h3 class="card-title" data-i18n="wizTitle"></h3>
+        <div class="wiz-progress" id="wizProgress"></div>
+        <p class="form-help" id="wizStepTitle" style="margin:12px 0 8px;font-size:14px;font-weight:600;color:var(--text)"></p>
+        <p class="form-help" id="wizStepDesc" style="margin-bottom:14px"></p>
+
+        <div class="wiz-step" data-step="1">
+          <div class="form-group">
+            <label class="form-label" data-i18n="optProfileName"></label>
+            <input class="form-input" id="wName" data-i18n-placeholder="phName">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="optSitePattern"></label>
+            <input class="form-input" id="wSitePattern" placeholder="*://example.com/*">
+          </div>
+          <div class="form-group" style="margin-top:12px">
+            <label class="form-label" data-i18n="wizSelectTab"></label>
+            <select class="form-select" id="wSiteTabs"></select>
+          </div>
+          <button class="btn btn-outline" id="wUseSite" data-i18n="wizUseSite"></button>
+          <div class="form-help" id="wSiteHint" style="margin-top:8px"></div>
+        </div>
+
+        <div class="wiz-step" data-step="2" style="display:none">
+          <div class="form-row" style="margin-bottom:14px">
+            <label class="choice-card">
+              <input type="radio" name="wTimerChoice" id="wTimerYes" value="yes">
+              <span data-i18n="wizHasTimer"></span>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="wTimerChoice" id="wTimerNo" value="no" checked>
+              <span data-i18n="wizNoTimer"></span>
+            </label>
+          </div>
+          <div id="wTimerFields" style="display:none">
+            <div class="form-group">
+              <div style="display:flex;gap:6px">
+                <input class="form-input" id="wTimerSelector" placeholder="h5.mb-0" style="flex:1">
+                <button class="btn btn-outline btn-sm" id="wPickTimer" data-i18n="wizPickTimer"></button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="optTimerTarget"></label>
+              <input class="form-input" id="wTimerTarget" value="00:00">
+            </div>
+          </div>
+        </div>
+
+        <div class="wiz-step" data-step="3" style="display:none">
+          <div class="form-group">
+            <div style="display:flex;gap:6px">
+              <input class="form-input" id="wBtnSelector" style="flex:1">
+              <button class="btn btn-outline btn-sm" id="wPickButton" data-i18n="wizPickButton"></button>
+            </div>
+            <div class="form-help" data-i18n="wizPickHint"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="optButtonText"></label>
+            <input class="form-input" id="wBtnText" placeholder="İleri|Devam|Next">
+          </div>
+        </div>
+
+        <div class="wiz-step" data-step="4" style="display:none">
+          <div class="form-group">
+            <div style="display:flex;gap:6px">
+              <input class="form-input" id="wPreSelector" data-i18n-placeholder="phOptional" style="flex:1">
+              <button class="btn btn-outline btn-sm" id="wPickPre" data-i18n="wizPickPre"></button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="optPreActionType"></label>
+            <select class="form-select" id="wPreType">
+              <option value="click" data-i18n="optPreActionClick"></option>
+              <option value="check" data-i18n="optPreActionCheck"></option>
+              <option value="select" data-i18n="optPreActionSelect"></option>
+            </select>
+          </div>
+        </div>
+
+        <div class="wiz-step" data-step="5" style="display:none">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="optMaxClicks"></label>
+              <input class="form-input" id="wMaxClicks" type="number" value="0" min="0">
+              <div class="form-help" data-i18n="optMaxClicksHelp"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="optCooldown"></label>
+              <input class="form-input" id="wCooldown" type="number" value="3000" min="0" step="100">
+              <div class="form-help" data-i18n="optCooldownHelp"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-outline" id="wizCancel" data-i18n="optCancel"></button>
+          <button class="btn btn-outline" id="wizBack" data-i18n="wizBack"></button>
+          <button class="btn btn-primary" id="wizNext" data-i18n="wizNext"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profil Formu (gizli) -->
+    <div id="profileForm" style="display:none">
+      <div class="card">
+        <h3 class="card-title" id="formTitle" data-i18n="optNewProfile"></h3>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="optProfileName"></label>
+          <input class="form-input" id="fName" data-i18n-placeholder="phName">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="optSitePattern"></label>
+          <input class="form-input" id="fSitePattern" placeholder="*://example.com/*">
+          <div class="form-help" data-i18n="optSitePatternHelp"></div>
+        </div>
+
+        <!-- Sayaç -->
+        <div class="section-title" data-i18n="optTimerEnabled"></div>
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" id="fTimerEnabled">
+            <span data-i18n="optTimerEnabled"></span>
+          </label>
+        </div>
+        <div id="timerFields" style="display:none">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" data-i18n="optTimerSelector"></label>
+              <div style="display:flex;gap:6px">
+                <input class="form-input" id="fTimerSelector" placeholder="h5.mb-0" style="flex:1">
+                <button class="btn btn-outline btn-sm" data-pick="fTimerSelector" data-i18n="optPickFromPage"></button>
+              </div>
+              <div class="form-help" data-i18n="optTimerSelectorHelp"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="optTimerTarget"></label>
+              <input class="form-input" id="fTimerTarget" value="00:00" placeholder="00:00">
+              <div class="form-help" data-i18n="optTimerTargetHelp"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ön İşlem -->
+        <div class="section-title" data-i18n="optPreAction"></div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="optPreActionSelector"></label>
+          <div style="display:flex;gap:6px">
+            <input class="form-input" id="fPreSelector" data-i18n-placeholder="phOptional" style="flex:1">
+            <button class="btn btn-outline btn-sm" data-pick="fPreSelector" data-i18n="optPickFromPage"></button>
+          </div>
+          <div class="form-help" data-i18n="optPreActionHelp"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="optPreActionType"></label>
+            <select class="form-select" id="fPreType">
+              <option value="click" data-i18n="optPreActionClick"></option>
+              <option value="check" data-i18n="optPreActionCheck"></option>
+              <option value="select" data-i18n="optPreActionSelect"></option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="optPreActionValue"></label>
+            <input class="form-input" id="fPreValue" data-i18n-placeholder="phDropdown">
+          </div>
+        </div>
+
+        <!-- Buton -->
+        <div class="section-title" data-i18n="optButtonSelector"></div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="optButtonSelector"></label>
+          <div style="display:flex;gap:6px">
+            <input class="form-input" id="fBtnSelector" placeholder='dx-button[aria-label="İleri"]' style="flex:1">
+            <button class="btn btn-outline btn-sm" data-pick="fBtnSelector" data-i18n="optPickFromPage"></button>
+          </div>
+          <div class="form-help" data-i18n="optButtonSelectorHelp"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="optButtonText"></label>
+          <input class="form-input" id="fBtnText" placeholder="İleri|Devam|Next">
+          <div class="form-help" data-i18n="optButtonTextHelp"></div>
+        </div>
+
+        <!-- Zamanlama -->
+        <div class="section-title" data-i18n="optTiming"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="optInterval"></label>
+            <input class="form-input" id="fInterval" type="number" value="1000" min="500" step="100">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="optDelay"></label>
+            <input class="form-input" id="fDelay" type="number" value="500" min="0" step="100">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="optMaxClicks"></label>
+            <input class="form-input" id="fMaxClicks" type="number" value="0" min="0">
+            <div class="form-help" data-i18n="optMaxClicksHelp"></div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="optCooldown"></label>
+            <input class="form-input" id="fCooldown" type="number" value="3000" min="0" step="100">
+            <div class="form-help" data-i18n="optCooldownHelp"></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-outline" id="btnCancel" data-i18n="optCancel"></button>
+          <button class="btn btn-primary" id="btnSave" data-i18n="optSave"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="presets.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
